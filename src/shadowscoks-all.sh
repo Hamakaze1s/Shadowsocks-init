@@ -19,10 +19,10 @@ plain='\033[0m'
 cur_dir=$(pwd)
 
 shadowsocks_python_file="shadowsocks-master"
-shadowsocks_python_url="https://github.com/Jv0id/Shadowsocks/raw/master/src/pack/shadowsocks-master.zip"
+shadowsocks_python_url="https://github.com/Hamakaze1s/Shadowsocks-init/raw/refs/heads/develop/src/shadowscoks-all.sh"
 shadowsocks_python_init="/etc/init.d/shadowsocks-python"
 shadowsocks_python_config="/etc/shadowsocks-python/config.json"
-shadowsocks_python_debian="https://raw.githubusercontent.com/Jv0id/Shadowsocks/master/src/ssr/shadowsocks-debian"
+shadowsocks_python_debian="https://github.com/Hamakaze1s/Shadowsocks-init/raw/refs/heads/develop/src/shadowsocks-debian"
 
 install_dependencies() {
   apt_depends=(
