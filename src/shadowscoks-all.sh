@@ -543,7 +543,7 @@ install_dependencies() {
     done
   elif check_sys packageManager apt; then
     apt_depends=(
-      gettext build-essential unzip gzip python python-dev python-setuptools curl openssl libssl-dev
+      gettext build-essential unzip gzip python3 python3-dev python3-setuptools curl openssl libssl-dev
       autoconf automake libtool gcc make perl cpio libpcre3 libpcre3-dev zlib1g-dev libev-dev libc-ares-dev git qrencode
     )
 
@@ -856,7 +856,7 @@ install_shadowsocks_python() {
   fi
 
   cd ${shadowsocks_python_file}
-  python setup.py install --record /usr/local/shadowsocks_python.log
+  python3 setup.py install --record /usr/local/shadowsocks_python.log
 
   if [ -f /usr/bin/ssserver ] || [ -f /usr/local/bin/ssserver ]; then
     chmod +x ${shadowsocks_python_init}
