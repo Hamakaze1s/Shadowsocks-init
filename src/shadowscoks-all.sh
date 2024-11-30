@@ -14,12 +14,12 @@ plain='\033[0m'
 cur_dir=$(pwd)
 
 shadowsocks_python_file="shadowsocks-master"
-shadowsocks_python_url="https://raw.githubusercontent.com/Hamakaze1s/Shadowsocks-init/refs/heads/develop/src/pack/shadowsocks-master.zip"
+shadowsocks_python_url="https://github.com/Jv0id/Shadowsocks/raw/master/src/pack/shadowsocks-master.zip"
 shadowsocks_python_init="/etc/init.d/shadowsocks-python"
 shadowsocks_python_config="/etc/shadowsocks-python/config.json"
-shadowsocks_python_debian="https://raw.githubusercontent.com/Hamakaze1s/Shadowsocks-init/refs/heads/develop/src/ssr/shadowsocks-debian"
+shadowsocks_python_debian="https://raw.githubusercontent.com/Jv0id/Shadowsocks/master/src/ssr/shadowsocks-debian"
 libsodium_file="libsodium-1.0.17"
-libsodium_url="https://raw.githubusercontent.com/Hamakaze1s/Shadowsocks-init/refs/heads/develop/src/pack/libsodium-1.0.17.tar.gz"
+libsodium_url="https://github.com/Jv0id/Shadowsocks/raw/master/src/pack/libsodium-1.0.17.tar.gz"
 
 install_dependencies() {
   apt_depends=(
@@ -53,7 +53,15 @@ install_libsodium() {
 download_files() {
   cd ${cur_dir}
   wget --no-check-certificate -c -t3 -T60 -O ${shadowsocks_python_file}.zip ${shadowsocks_python_url}
+  if [ ! -f ${shadowsocks_python_file}.zip ]; then
+    echo -e "[${red}Error${plain}] Failed to download ${shadowsocks_python_file}.zip"
+    exit 1
+  fi
   wget --no-check-certificate -c -t3 -T60 -O ${shadowsocks_python_init} ${shadowsocks_python_debian}
+  if [ ! -f ${shadowsocks_python_init} ]; then
+    echo -e "[${red}Error${plain}] Failed to download ${shadowsocks_python_init}"
+    exit 1
+  fi
 }
 
 config_shadowsocks() {
@@ -76,7 +84,15 @@ EOF
 
 install_shadowsocks_python() {
   cd ${cur_dir}
+  if [ ! -f ${shadowsocks_python_file}.zip ]; then
+    echo -e "[${red}Error${plain}] ${shadowsocks_python_file}.zip not found. Exiting..."
+    exit 1
+  fi
   unzip -q ${shadowsocks_python_file}.zip
+  if [ ! -d ${shadowsocks_python_file} ]; then
+    echo -e "[${red}Error${plain}] Failed to unzip ${shadowsocks_python_file}.zip"
+    exit 1
+  fi
   cd ${shadowsocks_python_file}
   python3 setup.py install --record /usr/local/shadowsocks_python.log
   chmod +x ${shadowsocks_python_init}
