@@ -1,17 +1,12 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
-#
+
 # Auto install Shadowsocks-Python Server
-#
-# Original by Jv0id <www.jpjny.xyz>
-# Fixed by hamakaze <hamakaze.top>
-#
 # System Required:  Debian7+, Ubuntu12+
 
 red='\033[0;31m'
 green='\033[0;32m'
-yellow='\033[0;33m'
 plain='\033[0m'
 
 [[ $EUID -ne 0 ]] && echo -e "[${red}Error${plain}] This script must be run as root!" && exit 1
@@ -19,10 +14,12 @@ plain='\033[0m'
 cur_dir=$(pwd)
 
 shadowsocks_python_file="shadowsocks-master"
-shadowsocks_python_url="https://github.com/Hamakaze1s/Shadowsocks-init/raw/refs/heads/develop/src/pack/shadowsocks-master.zip"
+shadowsocks_python_url="https://raw.githubusercontent.com/Hamakaze1s/Shadowsocks-init/refs/heads/develop/src/pack/shadowsocks-master.zip"
 shadowsocks_python_init="/etc/init.d/shadowsocks-python"
 shadowsocks_python_config="/etc/shadowsocks-python/config.json"
-shadowsocks_python_debian="https://github.com/Hamakaze1s/Shadowsocks-init/raw/refs/heads/develop/src/shadowsocks-debian"
+shadowsocks_python_debian="https://raw.githubusercontent.com/Hamakaze1s/Shadowsocks-init/refs/heads/develop/src/ssr/shadowsocks-debian"
+libsodium_file="libsodium-1.0.17"
+libsodium_url="https://raw.githubusercontent.com/Hamakaze1s/Shadowsocks-init/refs/heads/develop/src/pack/libsodium-1.0.17.tar.gz"
 
 install_dependencies() {
   apt_depends=(
@@ -35,6 +32,22 @@ install_dependencies() {
     echo -e "[${green}Info${plain}] Starting to install package ${depend}"
     apt-get -y install ${depend} >/dev/null 2>&1 || echo -e "[${red}Error:${plain}] Failed to install ${depend}"
   done
+}
+
+install_libsodium() {
+  if [ ! -f /usr/lib/libsodium.a ]; then
+    cd ${cur_dir}
+    wget --no-check-certificate -c -t3 -T60 -O ${libsodium_file}.tar.gz ${libsodium_url}
+    tar zxf ${libsodium_file}.tar.gz
+    cd ${libsodium_file}
+    ./configure --prefix=/usr && make && make install
+    if [ $? -ne 0 ]; then
+      echo -e "[${red}Error${plain}] ${libsodium_file} install failed."
+      exit 1
+    fi
+  else
+    echo -e "[${green}Info${plain}] ${libsodium_file} already installed."
+  fi
 }
 
 download_files() {
@@ -72,11 +85,12 @@ install_shadowsocks_python() {
 
 install_cleanup() {
   cd ${cur_dir}
-  rm -rf ${shadowsocks_python_file} ${shadowsocks_python_file}.zip
+  rm -rf ${shadowsocks_python_file} ${shadowsocks_python_file}.zip ${libsodium_file} ${libsodium_file}.tar.gz
 }
 
 install_shadowsocks() {
   install_dependencies
+  install_libsodium
   download_files
   config_shadowsocks
   install_shadowsocks_python
